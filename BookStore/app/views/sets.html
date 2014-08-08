@@ -1,0 +1,19 @@
+<div class="row">
+    <table class="table">
+        <thead>
+        <th>سیٹ کا نام</th>
+        <th>سیٹ کی کتب</th>
+        <th>تبدیل</th>
+        </thead>
+        <tbody>
+        <tr ng-repeat="set in sets">
+            <td>{{set.bookName}}</td>
+            <td><ul ng-repeat="book in set.set_books">
+                <li>{{book.bookName}}</li>
+            </ul></td>
+            <td><a href="#/editSet/{{set._id}}"><span class="glyphicon glyphicon-pencil link"></span></a></td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>

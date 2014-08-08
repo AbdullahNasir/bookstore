@@ -1,0 +1,157 @@
+﻿<div class="col-md-9" style="direction: ltr">
+    <div id="payment_grid">
+    </div>
+</div>
+
+<div class="col-md-3">
+    <form role="form">
+        <div class="form-group">
+            <label for="exampleInputEmail1">پارٹی</label>
+            <select id="customersDropDown" class="form-control">
+                <option value="">تمام</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">وصولی یا ادایگی</label>
+            <select id="paymentType" class="form-control">
+                <option value="">تمام</option>                
+                <option value="1">وصولی</option>
+                <option value="2">ادایگی</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">تاریخ شروع</label>
+            <input type="date" class="form-control" id="startDate">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">تاریخ ختم</label>
+            <input type="date" class="form-control" id="endDate">
+        </div>
+        <button type="submit" onclick="filterBills()" class="btn form-control btn-default">تلاش کریں</button>
+    </form>
+</div>
+
+<script>
+
+    var filterObj = { customer: "", startDate: "", endDate: "",type:"" };
+
+    var mode_enum = [" ", "وصولی", "ادایگی"];
+
+    $(document).ready(function () {
+        InitializeKendoGrid();
+        getCustomers();
+    });
+
+    function filterBills() {
+
+        filterObj.customer = $('#customersDropDown').val();
+        filterObj.startDate = $('#startDate').val();
+        filterObj.endDate = $('#endDate').val();
+        filterObj.type = $('#paymentType').val();
+        console.log(filterObj);
+        InitializeKendoGrid();
+
+    }
+
+    function getCustomers() {
+        $.ajax({
+            url: "/api/customers",
+            type: "GET",
+            success: showCustomers
+        });
+    }
+
+    function showCustomers(response) {
+        console.log(response);
+
+        for (var i = 0; i < response.length; i++) {
+            $('#customersDropDown').append("<option value='" + response[i]._id + "'>" + response[i].name + "</option>");
+        }
+    }
+
+    function navigate(id) {
+        window.location = "#/payments/edit/" + id;
+    }
+
+    function InitializeKendoGrid() {
+
+        $("#payment_grid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/api/payments/filteredList",
+                        dataType: "json",
+                        type: "POST",
+                        data: filterObj
+                    }
+
+                },
+                schema: {
+                    total: function (response) {
+                        console.log(response);
+                        return response.count;
+                    },
+                    data: "data"
+
+                },
+
+                pageSize: 100,
+                serverPaging: true
+            },
+            pageable: true,
+            scrollable: false,
+            dataBound: function () {
+                $('#payment_grid tr').each(function () {
+                    $(this).find('td').eq(4).text($(this).find('td').eq(4).text().substring(0, 10));
+                    $(this).find('td').eq(1).text(mode_enum[$(this).find('td').eq(1).text()]);
+                });
+            },
+            columns: [{
+                title: "تفصیل",
+                filterable: false,
+                headerAttributes: { style: "text-align: center; word-wrap: break-word;" },
+                template: '<a onclick=navigate("#=_id#")><span class="glyphicon glyphicon-th-list"></span></a>'
+            },
+             {
+                 field: "type",
+                 title: "وصولی یا ادایگی",
+                 filterable: false,
+                 headerAttributes: { style: "text-align: center; word-wrap: break-word;" }
+             },
+             {
+                 field: "amount",
+                 title: "رقم",
+                 filterable: false,
+                 headerAttributes: { style: "text-align: center; word-wrap: break-word;" }
+             },
+              {
+                  field: "customer.name",
+                  title: "پارٹی",
+                  filterable: false,
+                  headerAttributes: { style: "text-align: center; word-wrap: break-word;" }
+              },
+
+             {
+                 field: "date",
+                 title: "تاریخ",
+                 filterable: false,
+                 headerAttributes: { style: "text-align: center; word-wrap: break-word;" }
+             },
+            {
+                field: "voucher_no",
+                title: "بل نمبر",
+                filterable: false,
+                headerAttributes: { style: "text-align: center; word-wrap: break-word;" }
+            }
+
+
+
+
+
+            ]
+        });
+    }
+
+
+
+</script>

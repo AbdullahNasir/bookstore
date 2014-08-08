@@ -1,0 +1,68 @@
+
+<style>
+    .margin-fix{
+        margin-bottom: 10px;
+    }
+
+    .link{
+        cursor: pointer;
+    }
+
+    .icon:hover{
+        background: #C8C8C8;
+    }
+
+</style>
+
+<div class="row">
+
+    <div class="margin-fix">
+        <label>سیٹ کا نام</label>
+        <input ng-model="set.bookName" type="text" class="form-control">
+    </div>
+
+    <div class="margin-fix">
+        <label>قیمت</label>
+        <input ng-model="set.Price" type="text" class="form-control">
+    </div>
+
+    <div class="margin-fix">
+        <label>رعایت ٪</label>
+        <input ng-model="set.Discount" type="text" class="form-control">
+    </div>
+
+        <label>کتب</label>
+
+            <select ng-model="selectedTemp" id="obj" ng-options="obj.bookName for obj in universalSet" multiple class="form-control margin-fix">
+
+            </select>
+
+
+
+    <div  style="text-align: center">
+        <span class="glyphicon glyphicon-chevron-down margin-fix form-control link icon"  ng-click="moveBooks()"></span>
+    </div>
+
+    <label>سیٹ کی کتب</label>
+
+    <div class="table-responsive margin-fix">
+            <table class="table table-bordered">
+                <thead>
+                <th>کتاب کا نام</th>
+                <th>ہٹائے</th>
+                </thead>
+                <tbody style="font-size: 12px;">
+                <tr ng-repeat="obj in selected">
+                    <td>{{obj.bookName}}</td>
+                    <td><span class="glyphicon glyphicon-remove link" ng-click="removeBook($index,obj)"></span></td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+
+    <input type="button" value="کینسل" ng-click="back()" class="btn btn-Default">
+    <input type="button" value="محفوظ کریں" ng-click="save()" class="btn btn-primary">
+
+</div>

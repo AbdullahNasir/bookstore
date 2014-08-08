@@ -1,0 +1,225 @@
+﻿
+<div class="col-md-9">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>تاریخ</th>
+                <th>تفصیل</th>
+                <th>بل نمبر</th>
+                <th>جمع</th>
+                <th>نام</th>
+                <th>بیلنس</th>
+            </tr>
+        </thead>
+        <tbody id="LedgerTable">
+
+        </tbody>
+    </table>
+</div>
+<div class="col-md-3 hidden-print">
+    <form role="form">
+        <div class="form-group">
+            <label for="exampleInputEmail1">پارٹی</label>
+            <select id="customersDropDown" class="form-control">
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">ابتدائی تاریخ</label>
+            <input type="date" class="form-control" id="startDate">
+        </div>
+
+        <button type="submit" onclick="filterBills()" class="btn form-control btn-default">کھاتہ دیکھیں</button>
+    </form>
+</div>
+<script>
+
+    var Data = [];
+
+    var Customers;
+
+    var filterObj = { customer: "", startDate: "", endDate: "", bill_no: "", type: "" };
+
+    $(document).ready(function () {
+        getCustomers();
+    });
+
+
+
+    function getCustomers() {
+        $.ajax({
+            url: "/api/customers",
+            type: "GET",
+            success: showCustomers
+        });
+    }
+
+    function showCustomers(response) {
+        console.log(response);
+        Customers = response;
+
+        for (var i = 0; i < response.length; i++) {
+            $('#customersDropDown').append("<option value='" + response[i]._id + "'>" + response[i].name + "</option>");
+        }
+    }
+
+    function filterBills() {
+        filterObj.customer = $('#customersDropDown').val();
+        filterObj.startDate = $('#startDate').val();
+        getBills();
+    }
+
+    function getBills() {
+        $.ajax({
+            url: '/api/bills/filteredList',
+            type: 'POST',
+            data: filterObj,
+            success: function (response) {
+                console.log(response);
+                Data = [];
+                for (var i = 0; i < response.data.length; i++) {
+                    var Count = Data.length;
+                    Data[Count] = new Object();
+                    Data[Count].date = response.data[i].date;
+                    Data[Count].details = "بل";
+                    Data[Count].refNo = response.data[i].bill_no;
+                    Data[Count].debit = response.data[i].balance;
+                    Data[Count].credit = response.data[i].amountPaid;
+                }
+
+                getPurchaseBills();
+            }
+        });
+    }
+
+
+    function getPurchaseBills() {
+        $.ajax({
+            url: '/api/bill/purchase/filteredList',
+            type: 'POST',
+            data: filterObj,
+            success: function (response) {
+                console.log(response);
+                
+                for (var i = 0; i < response.data.length; i++) {
+                    var Count = Data.length;
+                    Data[Count] = new Object();
+                    Data[Count].date = response.data[i].date;
+                    Data[Count].details = "خریداری بل";
+                    Data[Count].refNo = response.data[i].bill_no;
+                    Data[Count].credit = response.data[i].balance;
+                    Data[Count].debit = response.data[i].amountPaid;
+                }
+
+                getPayments();
+            }
+        });
+    }
+
+    function getPayments() {
+
+        $.ajax({
+            url: '/api/payments/filteredList',
+            type: 'POST',
+            data: filterObj,
+            success: function (response) {
+                console.log(response);
+                for (var i = 0; i < response.data.length; i++) {
+                    var Count = Data.length;
+                    Data[Count] = new Object();
+                    Data[Count].date = response.data[i].date;
+
+                    if (response.data[i].type == 1) {//Wasoli
+                        Data[Count].details = "وصولی";
+                        Data[Count].refNo = +response.data[i].voucher_no;
+                        Data[Count].credit = response.data[i].amount;
+                        Data[Count].debit = 0;
+                    }
+
+                    else if (response.data[i].type == 2) {
+                        Data[Count].details = "ادائیگی";
+                        Data[Count].refNo = +response.data[i].voucher_no;
+                        Data[Count].credit = 0;
+                        Data[Count].debit = response.data[i].amount;
+                    }
+
+                    
+                }
+
+                showLedger();
+            }
+        });
+    }
+
+    function showLedger() {
+
+       Data = Data.sort(function (a, b) {
+           return new Date(a.date) - new Date(b.date);
+        });
+
+        $('#LedgerTable').empty();
+
+       
+        for (var i = 0; i < Data.length; i++) {
+            var row = '<tr>';
+            row += '<td>' + new Date(Data[i].date).toLocaleDateString() + '</td>';
+            row += '<td>' + Data[i].details + '</td>';
+            row += '<td>' + Data[i].refNo + '</td>';
+            row += '<td>' + Data[i].credit + '</td>';
+            row += '<td>' + Data[i].debit + '</td>';
+            row += '</tr>';
+            $('#LedgerTable').append(row);
+        }
+
+        var row = '<tr>';
+        row += '<td>' + new Date().toLocaleDateString()+ '</td>';
+        row += '<td>ابھی کا بیلنس</td>';
+        row += '<td></td>';
+        row += '<td></td>';
+        row += '<td></td>';
+        row += '<td>' + Customers[$('#customersDropDown')[0].selectedIndex].current_balance + '</td>';
+        $('#LedgerTable').append(row);
+
+        calculateBalance();
+
+    }
+
+    function calculateBalance() {
+
+        var table = $('#LedgerTable');
+        var rows = $(table).find('tr');
+        var count = $(table).find('tr').length-1;
+
+        var runningCredit = 0;
+
+        for (var i = 0; i < count; i++) {
+            runningCredit += parseFloat($(rows[i]).find('td').eq(4).text()) - parseFloat($(rows[i]).find('td').eq(3).text());
+        }
+
+
+        var balance = $(table).find('tr').eq(count).find('td').eq(5).text();
+
+        var openingBalance = balance - runningCredit;
+
+        var row = '<tr>';
+        row += '<td>' + new Date($('#startDate').val()).toLocaleDateString() + '</td>';
+        row += '<td>ابتدائی بیلنس</td>';
+        row += '<td></td>';
+        row += '<td></td>';
+        row += '<td></td>';
+        row += '<td>' + openingBalance+ '</td>';
+        $(table).prepend(row);
+        count++;
+        rows = $(table).find('tr');
+
+        $(table).find('tr').eq(count-1).append('<td>'+balance+'</td');
+
+        for (var i = 1; i < count - 1;i++) {
+
+            var row = $(rows[i]);
+            var prevRow = $(rows[i-1]);
+            balance = parseFloat($(prevRow).find('td').eq(5).text()) - parseFloat($(row).find('td').eq(3).text()) +parseFloat($(row).find('td').eq(4).text());
+            $(row).append('<td>' + balance + '</td>');
+        }
+    }
+
+</script>

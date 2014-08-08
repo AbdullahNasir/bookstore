@@ -1,0 +1,32 @@
+<style>
+    form input,label,select{
+        margin-bottom: 8px;
+    }
+</style>
+<form role="form">
+    <div class="form-group">
+         <label for="pd"> سیریل نمبر</label>
+        <input  id="sNo" type="text" ng-model="Book.Properties.sNo" class="form-control">
+        <label for="bookName">کتاب کا نام </label>
+        <input type="text" class="form-control" id="bookName" ng-model="Book.Properties.bookName" placeholder="کتاب کا نام ">
+        <label for="Writer">مصنف  کا نام</label>
+        <input type="text" class="form-control" id="Writer" ng-model="Book.Properties.Writer" placeholder="مصنف  کا نام">
+        <label for="publisher">پبلیشر</label>
+        <select id="publisher" ng-model="Book.Properties.Publisher" class="form-control" ng-options="publisher.name for publisher in Publishers">
+            <option>{{Book.Properties.Publisher.name}}</option>
+        </select>
+        <label for="price">قیمت   </label>
+        <input id="price" type="number" ng-model="Book.Properties.Price" class="form-control">
+        <label for="qty">تعداد</label>
+        <input id="qty" type="number" ng-model="Book.Properties.Qty" class="form-control">
+        <label for="discount">رعایت</label>
+        <input id="discount" type="number" ng-model="Book.Properties.Discount" class="form-control">
+        <label for="pd"> خریداری رعایت</label>
+        <input  id="pd" type="number" ng-model="Book.Properties.costDiscount" class="form-control">
+        <br/>
+        <a href="#/Books"><button class="btn">کینسل</button></a>
+        <button ng-click="save()" class="btn btn-primary">محفوظ کریں</button>
+        <button ng-show="isDeleteable" ng-click="delete()" class="btn btn-danger">ڈیلیٹ</button>
+    </div>
+
+</form>

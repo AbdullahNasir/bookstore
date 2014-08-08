@@ -1,0 +1,159 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <!-- build:css(.tmp) styles/main.css -->
+        <link rel="stylesheet" media="all" href="styles/bootstrap.css">
+      <link rel="stylesheet" href="styles/angucomplete.css">
+        <link rel="stylesheet" href="styles/main.css">
+        <!-- endbuild -->
+</head>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+
+            <ul class="nav navbar-nav navbar-right">
+
+
+
+
+                <li class="dropdown">
+                    <a  class="dropdown-toggle" data-toggle="dropdown">رقم وصولی / ادائیگی<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#/payments/list">فہرست</a></li>
+                        <li><a href="#/payments/new">نیی وصولی / ادائیگی</a> </li>
+
+                    </ul>
+                </li>
+
+
+
+                <li class="dropdown">
+                    <a  class="dropdown-toggle" data-toggle="dropdown">بل<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#/bill/purchase/list">فہرست خریداری بل</a></li>
+                        <li><a href="#/bill/list">فہرست بل</a>
+                        <li><a href="#/bill/purchase/new">نیا خریداری بل</a></li>
+                        <li><a href="#/NewBill">نیا بل</a></li>
+
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown">پارٹی<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#/customers">فہرست</a></li>
+                        <li><a href="#/partyledger">کھاتہ</a></li>
+                    </ul>
+                </li>
+
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown">سیٹ <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#/sets">فہرست</a></li>
+                        <li><a href="#/NewSet">نئے سیٹ کا اندراج</a></li>
+                    </ul>
+                </li>
+                <li><a href="#/publishers">پبلیشر</a></li>
+                <li class="dropdown">
+                    <a  class="dropdown-toggle" data-toggle="dropdown">کتب <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">فہرست</a></li>
+                        <li><a href="#/addBook">نیی کتاب کا اندراج</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+  <body ng-app="bookStoreApp" style="direction: rtl;padding-top: 70px">
+    <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <!--[if lt IE 9]>
+      <script src="bower_components/es5-shim/es5-shim.js"></script>
+      <script src="bower_components/json3/lib/json3.min.js"></script>
+    <![endif]-->
+
+    <!-- Add your site or application content here -->
+    <div class="container" ng-view=""></div>
+
+    <script src="bower_components/jquery/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+
+    <script src="bower_components/kendo/kendo.all.min.js"></script>
+    <link href="bower_components/kendo/kendo.silver.min.css" rel="stylesheet">
+    <link href="bower_components/kendo/kendo.common.min.css" rel="stylesheet">
+      <link href="bower_components/kendo/kendo.rtl.min.css" rel="stylesheet">
+      
+
+        <!-- build:js scripts/modules.js -->
+        <script src="bower_components/angular-resource/angular-resource.js"></script>
+        <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+        <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+        <script src="bower_components/angular-route/angular-route.js"></script>
+        <!-- endbuild -->
+
+        <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <script src="scripts/bootstrap.js"></script>
+        <script src="scripts/app.js"></script>
+        <script src="scripts/controllers/main.js"></script>
+        <script src="scripts/controllers/listbooks.js"></script>
+        <script src="scripts/services/books.js"></script>
+        <script src="scripts/controllers/addBook.js"></script>
+        <script src="scripts/services/publishers.js"></script>
+        <script src="scripts/controllers/addPublisher.js"></script>
+        <script src="scripts/directives/angucomplete.js"></script>
+
+        <script src="scripts/controllers/editBook.js"></script>
+        <script src="scripts/controllers/customers.js"></script>
+        <script src="scripts/services/customer_factory.js"></script>
+        <script src="scripts/controllers/NewSet.js"></script>
+        <script src="scripts/services/set_factory.js"></script>
+        <script src="scripts/controllers/sets.js"></script>
+
+        <script src="scripts/controllers/editSet.js"></script>
+        <script src="scripts/controllers/NewBill.js"></script>
+        <script src="scripts/services/bill_factory.js"></script>
+        <script src="scripts/controllers/bill.js"></script>
+        <script src="scripts/controllers/bill\edit.js"></script>
+        <script src="scripts/controllers/bill\purchase\new.js"></script>
+        <script src="scripts/controllers/bill\purchase\edit.js"></script>
+        <script src="scripts/controllers/bill\list.js"></script>
+        <script src="scripts/controllers/bill\purchase\list.js"></script>
+        <script src="scripts/controllers/payments\new.js"></script>
+        <script src="scripts/services/payment_service.js"></script>
+        <script src="scripts/controllers/payments\list.js"></script>
+        <script src="scripts/controllers/payments\edit\:id.js"></script>
+        <script src="scripts/controllers/payments\edit.js"></script>
+        <script src="scripts/controllers/partyledger.js"></script>
+        <script src="scripts/controllers/publishers.js"></script>
+        <!-- endbuild -->
+</body>
+</html>

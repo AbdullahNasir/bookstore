@@ -1,0 +1,29 @@
+<div class="col-md-12">
+    <form role="form">
+        <div class="form-group">
+            <label for="Date">تاریخ</label>
+            <input ng-model="payment.date" type="date" class="form-control" id="Date">
+        </div>
+        <div class="form-group">
+            <label for="Party">پارٹی</label>
+            <select ng-model="payment.customer"  ng-options="customer.name for customer in customers track by customer.name" id="Party" class="form-control">
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="type">وصولی / ادائیگی</label>
+            <select ng-model="payment.type" id="type" class="form-control">
+                <option value="1">وصولی</option>
+                <option value="2">ادائیگی</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="Amount">رقم</label>
+            <input ng-model="payment.amount" type="number" class="form-control" id="Amount">
+        </div>
+        <button ng-click="savePayment()" type="button" class="btn btn-primary">محفوظ کریں</button>
+        <button ng-show="isDeleteable" ng-click="deletePayment()" type="button" class="btn btn-danger">ڈیلیٹ کریں</button>
+        <a href="#/payments/list"><button class="btn btn-default">کینسل</button></a>
+
+    </form>
+</div>

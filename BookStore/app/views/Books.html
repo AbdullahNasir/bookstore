@@ -1,0 +1,228 @@
+<link href="../styles/Books.css" rel="stylesheet">
+
+<div class="col-md-12">
+            <form role="form">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">پبلیشر</label>
+                    <select id="publishersDropDown" class="form-control">
+                        <option value="">تمام</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">کتاب کا نام</label>
+                    <input type="text" class="form-control" id="bookNameTextBox">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">سیریل نمبر</label>
+                    <input type="text" class="form-control" id="sNo">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">مصنف کا نام</label>
+                    <input type="text" class="form-control" id="writerTextBox">
+                </div>
+                <button type="submit" onclick="filterBooks()" class="btn form-control btn-default">تلاش کریں</button>
+            </form>
+        </div>
+
+<div class="row k-rtl">
+
+    <div class="col-md-12">
+        <div id="Books" >
+        </div>
+        
+    </div>
+
+
+
+
+
+
+</div>
+
+
+
+
+<script>
+
+    var filterObj = { type: "book", "Publisher._id": '', bookName: '', Writer: '', sNo:'' };
+    var localPageFlag = false;
+
+    $(document).ready(function () {
+
+        if (localStorage['stateFlag'] == "true") {
+            filterObj = JSON.parse(localStorage.getItem("filter"));
+        }
+
+        InitializeKendoGrid();
+        GetPublishers();
+
+    });
+
+    function GetPublishers() {
+        $.ajax({
+            url: "/api/getPublishers",
+            type: "GET",
+            success: showPublishers
+        });
+    }
+
+    function filterBooks() {
+        filterObj["Publisher._id"] = $('#publishersDropDown').val();
+        filterObj.bookName = $('#bookNameTextBox').val();
+        filterObj.Writer = $('#writerTextBox').val();
+        filterObj.sNo = $('#sNo').val();
+        console.log(filterObj);
+        $('#Books').empty();
+        InitializeKendoGrid();
+    }
+
+    function showPublishers(response) {
+        for (var i = 0; i < response.length; i++) {
+            $('#publishersDropDown').append('<option value="' + response[i]._id + '">' + response[i].name + '</option>');
+
+        }
+    }
+
+    function navigate(id) {
+        localStorage['scrollPosition'] = document.body.scrollTop
+        localStorage['stateFlag'] = true;
+        localStorage.setItem('filter', JSON.stringify(filterObj));
+        localStorage['gridPage'] = grid.data("kendoGrid").dataSource.page();
+        window.location = "/#/editBook/" + id;
+       
+    }
+    var grid;
+    function InitializeKendoGrid() {
+        console.log(filterObj);
+       grid = $("#Books").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: "/api/Books/getFilteredBooks",
+                        dataType: "json",
+                        type: "POST",
+                        data: filterObj
+                    }
+
+                },
+                schema: {
+                    total: function (response) {
+                        console.log(response);
+                        return response.count;
+                    },
+                    data: "data",
+                    model: {
+                        fields: {
+                            bookName: { type: "string" },
+                            Writer: { type: "string" },
+                            "Publisher.name": { type: "string" },
+                            Price: { type: "number" },
+                            Discount: { type: "number" },
+                            costDiscount: { type: "number" },
+                            Qty: { type: "number" },
+                            Discount: { type: "number" }
+                        }
+                    }
+
+                },
+
+                pageSize: 100,
+                serverPaging: true
+            },
+            pageable: true,
+            scrollable: false,
+            dataBound: function () {
+                
+
+                if (localStorage['stateFlag'] == "true") {
+                    
+                    localStorage['stateFlag'] = false;
+                    window.scrollTo(0, localStorage['scrollPosition']);
+                    if (localStorage["gridPage"] != "1") {
+                        grid.data("kendoGrid").dataSource.page(localStorage["gridPage"]);
+                        localPageFlag = true;
+                    }
+                    
+                }
+                else if (localPageFlag) {
+                    localPageFlag = false;
+                }
+
+                else {
+                    //window.scrollTo(0, 100);
+                }
+
+                $('#Books tr').each(function () {
+                    if (parseInt($(this).find('td').eq(5).text()) <= 0) {
+                        $(this).css('color', 'red');
+                    }
+                    
+                });
+
+            },
+            columns: [
+                {
+                    field: "sNo",
+                    title: "سیریل نمبر",
+                    filterable: false
+                },
+                {
+                    field: "bookName",
+                    title: "کتاب کا نام",
+                    filterable: false,
+                    width:400
+                },
+           {
+               field: "Writer",
+               title: "مصنف",
+               filterable: false,
+               width: 300
+           },
+           {
+               field: "Publisher.name",
+               title: "پبلشر",
+               filterable: false,
+               width: 200
+           },
+
+             {
+                 field: "Price",
+                 title: "قیمت",
+                 filterable: false,
+                 width: 50
+             },
+              {
+                  field: "Qty",
+                  title: "تعداد",
+                  filterable: false,
+                  width: 50
+              },
+
+               {
+                   field: "Discount",
+                   title: "رعایت ٪",
+                   filterable: false,
+                   width: 50
+               },
+
+             {
+                 field: "costDiscount",
+                 title: "رعایت خریداری ٪",
+                 filterable: false,
+                 width: 50
+
+             },
+
+            {
+                title: "تبدیل",
+                filterable: false,
+                template: '<a onclick=navigate("#=_id#")><span class="glyphicon glyphicon-pencil"></span></a>'
+            }
+
+
+
+            ]
+        });
+    }
+
+</script>

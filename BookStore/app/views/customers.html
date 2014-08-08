@@ -1,0 +1,66 @@
+
+<style>
+    .red {
+        color:red;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-10">
+
+        <ul class="nav nav-pills hidden-print pull-right">
+            <li><a data-toggle="modal" ng-click="refresh()" data-target="#myModal">نئے کسٹمر کا اندراج </a></li>
+
+        </ul>
+
+        <input style="margin-bottom: 5px" type="text" placeholder="تلاش" class="form-control hidden-print" ng-model="search"/>
+        <table class="table">
+
+                    <th>نام </th>
+                    <th>اوپننگ بیلنس</th>
+                    <th>کرنٹ بیلنس</th>
+                    <th>تبدیل</th>
+
+
+                <tr ng-repeat="customer in customers | filter:search">
+                    <td>{{customer.name}}</td>
+                    <td ng-class="formatColor(customer.opening_balance)">{{formatNumber(customer.opening_balance)}}</td>
+                    <td ng-class="formatColor(customer.current_balance)">{{formatNumber(customer.current_balance)}}</td>
+                    <td><a data-toggle="modal" data-target="#myModal" ng-click="update(customer)"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                </tr>
+
+        </table>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close pull-left" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">کسٹمر انٹری</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form">
+                    <div class="form-group">
+                        <label for="customer_name">نام</label>
+                        <input ng-model="customer.name" type="text" class="form-control" id="customer_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="opening_balance">اوپننگ بیلنس</label>
+                        <input ng-model="customer.opening_balance" type="number" class="form-control" id="opening_balance">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="refresh()" data-dismiss="modal">کینسل</button>
+                <button type="button" ng-click="save()" data-dismiss="modal" class="btn btn-primary">محفوظ کریں</button>
+                <button type="button" ng-click="delete()" data-dismiss="modal" class="btn btn-danger">ڈیلیٹ کریں</button>
+                <button type="button" ng-click="refresh()" class="btn btn-default">کلئیر</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

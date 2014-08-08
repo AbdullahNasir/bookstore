@@ -1,0 +1,181 @@
+<!--<div class="col-md-12">
+    <table class="table">
+        <thead>
+        <tr>
+            <td>بل نمبر</td>
+            <td>تاریخ</td>
+            <td>پارٹی</td>
+            <td>کل رقم</td>
+            <td>بل کا طریقہ کار</td>
+            <td>تفصیل</td>
+        </tr>
+        </thead>
+        <tbody ng-repeat="bill in bills">
+        <tr>
+            <td>{{bill.bill_no}}</td>
+            <td>{{bill.date}}</td>
+            <td>{{bill.customer.name}}</td>
+            <td>{{bill.grand_total}}</td>
+            <td>{{bill.mode}}</td>
+            <td><a href="#/bill/purchase/edit/{{bill.bill_no}}"><span class="glyphicon glyphicon-th-list"></span></a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>-->
+
+
+<div class="col-md-9">
+    <div style="direction: ltr" id="bill_grid"></div>
+</div>
+
+<div class="col-md-3">
+    <form role="form">
+
+        <div class="form-group">
+            <label for="exampleInputPassword1">بل نمبر</label>
+            <input type="text" class="form-control" id="billNo">
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">کسٹمر</label>
+            <select id="customersDropDown" class="form-control">
+                <option value="">تمام</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">تاریخ شروع</label>
+            <input type="date" class="form-control" id="startDate">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">تاریخ ختم</label>
+            <input type="date" class="form-control" id="endDate">
+        </div>
+        <button type="submit" onclick="filterBills()" class="btn form-control btn-default">تلاش کریں</button>
+    </form>
+</div>
+
+<script>
+
+    var filterObj = { customer: "", startDate: "", endDate: "", bill_no: "" };
+
+    $(document).ready(function () {
+        InitializeKendoGrid();
+        getCustomers();
+    });
+
+    var mode_enum = {
+        exchange: "ایکسچینج",
+        Cash: "کیش"
+    }
+
+    function filterBills() {
+
+        filterObj.customer = $('#customersDropDown').val();
+        filterObj.startDate = $('#startDate').val();
+        filterObj.endDate = $('#endDate').val();
+        filterObj.bill_no = $('#billNo').val();
+        console.log(filterObj);
+        InitializeKendoGrid();
+
+    }
+
+    function getCustomers() {
+        $.ajax({
+            url: "/api/customers",
+            type: "GET",
+            success: showCustomers
+        });
+    }
+
+    function showCustomers(response) {
+        console.log(response);
+
+        for (var i = 0; i < response.length; i++) {
+            $('#customersDropDown').append("<option value='" + response[i]._id + "'>" + response[i].name + "</option>");
+        }
+    }
+
+    function navigate(id) {
+        window.location = "#/bill/purchase/edit/" + id;
+    }
+
+    function InitializeKendoGrid() {
+
+        $("#bill_grid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '/api/bill/purchase/filteredList',
+                        dataType: "json",
+                        type: "POST",
+                        data: filterObj
+                    }
+
+                },
+                schema: {
+                    total: function (response) {
+                        console.log(response);
+                        return response.count;
+                    },
+                    data: "data"
+
+                },
+
+                pageSize: 100,
+                serverPaging: true
+            },
+            pageable: true,
+            scrollable: false,
+            dataBound: function () {
+                $('#bill_grid tr').each(function () {
+                    $(this).find('td').eq(4).text($(this).find('td').eq(4).text().substring(0, 10));
+                    $(this).find('td').eq(1).text(mode_enum[$(this).find('td').eq(1).text()]);
+                });
+            },
+            columns: [{
+                title: "تفصیل",
+                filterable: false,
+                headerAttributes: { style: "text-align: center; word-wrap: break-word;" },
+                template: '<a onclick=navigate("#=bill_no#")><span class="glyphicon glyphicon-th-list"></span></a>'
+            },
+             {
+                 field: "mode",
+                 title: "بل کا طریقہ کار",
+                 filterable: false,
+                 headerAttributes: { style: "text-align: center; word-wrap: break-word;" }
+             },
+             {
+                 field: "grand_total",
+                 title: "کل رقم",
+                 filterable: false,
+                 headerAttributes: { style: "text-align: center; word-wrap: break-word;" }
+             },
+              {
+                  field: "customer.name",
+                  title: "پارٹی",
+                  filterable: false,
+                  headerAttributes: { style: "text-align: center; word-wrap: break-word;" }
+              },
+
+             {
+                 field: "date",
+                 title: "تاریخ",
+                 filterable: false,
+                 headerAttributes: { style: "text-align: center; word-wrap: break-word;" }
+             },
+            {
+                field: "bill_no",
+                title: "بل نمبر",
+                filterable: false,
+                headerAttributes: { style: "text-align: center; word-wrap: break-word;" }
+            }
+
+
+
+
+
+            ]
+        });
+    }
+
+</script>
